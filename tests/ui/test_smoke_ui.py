@@ -1,10 +1,9 @@
 from playwright.sync_api import Page, expect
-
-BASE_URL = "https://automationintesting.online"
+from pages.home_page import HomePage
 
 
 def test_homepage_loads(page: Page):
-    page.goto(BASE_URL)
+    home = HomePage(page)
+    home.open()
 
-    expect(page).to_have_url(f"{BASE_URL}/")
-    expect(page.get_by_text("Shady Meadows B&B").first).to_be_visible()
+    expect(home.hotel_name).to_be_visible()

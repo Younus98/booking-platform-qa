@@ -1,0 +1,20 @@
+from playwright.sync_api import Page
+
+
+class ContactForm:
+    def __init__(self, page: Page):
+        self.page = page
+        self.name_input = page.get_by_test_id("ContactName")
+        self.email_input = page.get_by_test_id("ContactEmail")
+        self.phone_input = page.get_by_test_id("ContactPhone")
+        self.subject_input = page.get_by_test_id("ContactSubject")
+        self.message_input = page.get_by_test_id("ContactDescription")
+        self.submit_button = page.get_by_role("button", name="Submit")
+
+    def send_message(self, name, email, phone, subject, message):
+        self.name_input.fill(name)
+        self.email_input.fill(email)
+        self.phone_input.fill(phone)
+        self.subject_input.fill(subject)
+        self.message_input.fill(message)
+        self.submit_button.click()
