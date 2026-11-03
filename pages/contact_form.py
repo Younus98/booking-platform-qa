@@ -19,5 +19,8 @@ class ContactForm:
         self.message_input.fill(message)
         self.submit_button.click()
 
+    def validation_error(self, message):
+        return self.page.get_by_text(message, exact=True)
+
     def success_heading(self, name):
         return self.page.get_by_role("heading", name=f"Thanks for getting in touch {name}!")

@@ -25,6 +25,7 @@ def test_room_list_returns_json(api, base_url):
 
     assert response.status_code == 200
     assert "application/json" in response.headers["Content-Type"]
+    assert response.json()["rooms"]
 
 
 def test_every_room_matches_schema(api, base_url):
@@ -45,17 +46,6 @@ def test_room_ids_are_unique(api, base_url):
     assert len(ids) == len(set(ids)), f"Duplicate room ids: {ids}"
 
 
-    ALLOWED_ROOM_TYPES = ["Single", "Double", "Twin", "Family", "Suite"]
-
-
-
-ALLOWED_ROOM_TYPES = [ "Single", "Double", "Twin", "Family", "Suite"]
-
-
-def test_room_types_are_valid(api, base_url):
-    for room in get_rooms(api, base_url):
-        assert room["type"] in ALLOWED_ROOM_TYPES, f"Room {room['roomName']} has invalid type {room['type']}"
-
 ALLOWED_ROOM_TYPES = ["Single", "Double", "Twin", "Family", "Suite"]
 
 
@@ -68,12 +58,6 @@ def test_every_room_has_features(api, base_url):
     for room in get_rooms(api, base_url):
         assert len(room["features"]) > 0, f"Room {room['roomName']} has no features"
 
-def get_rooms(api, base_url):
-    response = api.get(f"{base_url}/api/room")
-    assert response.status_code == 200
-    return response.json()["rooms"]
-
-
 
 @pytest.mark.xfail(reason="Known defect: /api/room/{id} returns a server error, see docs/defects.md")
 def test_single_room_can_be_fetched(api, base_url):
@@ -81,3 +65,11 @@ def test_single_room_can_be_fetched(api, base_url):
 
     assert response.status_code == 200
     assert response.json()["roomid"] == 1
+
+
+@pytest.mark.xfail(reason="Known defect: invalid room IDs return 500 instead of 404")
+@pytest.mark.parametrize("room_id", ["not-a-room", "999999"])
+def test_invalid_room_id_returns_not_found(api, base_url, room_id):
+    response = api.get(f"{base_url}/api/room/{room_id}")
+
+    assert response.status_code == 404
