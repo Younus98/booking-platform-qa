@@ -27,3 +27,8 @@ Record of AI-generated test code and how it was reviewed before being kept.
 - Ran the full suite: 14 passed, 3 xfailed
 - Reviewed the full diff with `git diff` before committing
 - Compared the expected validation messages with the real website
+
+**Improvements made after review:**
+- Negative tests now also check that no success message appears
+- Added valid boundary tests: subject with 5 characters, message with 20 characters
+- Found that the happy-path test already covers the valid phone boundary (11 characters)

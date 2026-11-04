@@ -4,6 +4,15 @@ from pages.home_page import HomePage
 from pages.contact_form import ContactForm
 
 
+VALID_VALUES = {
+    "name": "Muhammad Tester",
+    "email": "tester@example.com",
+    "phone": "01234567890",
+    "subject": "Booking question",
+    "message": "Hello, I would like to ask about room availability next month.",
+}
+
+
 def test_guest_can_send_contact_message(page: Page):
     name = "Muhammad Tester"
     subject = "Booking question"
@@ -41,15 +50,30 @@ def test_contact_form_rejects_invalid_input(
     contact = ContactForm(page)
     home.open()
 
-    values = {
-        "name": "Muhammad Tester",
-        "email": "tester@example.com",
-        "phone": "01234567890",
-        "subject": "Booking question",
-        "message": "Hello, I would like to ask about room availability next month.",
-    }
+    values = dict(VALID_VALUES)
     values[field] = invalid_value
 
     contact.send_message(**values)
 
     expect(contact.validation_error(expected_error)).to_be_visible()
+    expect(contact.success_heading(values["name"])).not_to_be_visible()
+
+
+@pytest.mark.parametrize(
+    ("field", "boundary_value"),
+    [
+        ("subject", "Hello"),
+        ("message", "This message is 20ch"),
+    ],
+)
+def test_contact_form_accepts_minimum_lengths(page: Page, field: str, boundary_value: str):
+    home = HomePage(page)
+    contact = ContactForm(page)
+    home.open()
+
+    values = dict(VALID_VALUES)
+    values[field] = boundary_value
+
+    contact.send_message(**values)
+
+    expect(contact.success_heading(values["name"])).to_be_visible()
