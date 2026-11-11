@@ -4,6 +4,9 @@ import requests
 import truststore
 truststore.inject_into_ssl()
 
+def pytest_html_report_title(report):
+    report.title = "Booking Platform – Test Report"
+
 BASE_URL = "https://automationintesting.online"
 
 
